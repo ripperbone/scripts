@@ -39,8 +39,8 @@ add-random() {
 add-artist() {
   echo "[ADD ARTIST ${1}]"
   if [ $# -eq 1 ]; then
-    echo "${MUSIC_CONTROL_URL}/songs/artist/`encode-for-url ${1}`"
-    curl -X POST "${MUSIC_CONTROL_URL}/songs/artist/`encode-for-url ${1}`" -H "Authorization: Basic ${MUSIC_CONTROL_AUTH}" --data '' --insecure --silent >/dev/null
+    echo "${MUSIC_CONTROL_URL}/songs/artist/`encode-for-url \"${1}\"`"
+    curl -X POST "${MUSIC_CONTROL_URL}/songs/artist/`encode-for-url \"${1}\"`" -H "Authorization: Basic ${MUSIC_CONTROL_AUTH}" --data '' --insecure --silent >/dev/null
   else
     echo "No artist specified."
   fi
@@ -49,8 +49,8 @@ add-artist() {
 search-artist() {
   echo "[SEARCH ARTIST ${1}]"
   if [ $# -eq 1 ]; then
-    echo "${MUSIC_CONTROL_URL}/songs/artist/`encode-for-url ${1}`"
-    curl -X GET "${MUSIC_CONTROL_URL}/songs/artist/`encode-for-url ${1}`" -H "Authorization: Basic ${MUSIC_CONTROL_AUTH}" --data '' --insecure --silent
+    echo "${MUSIC_CONTROL_URL}/songs/artist/`encode-for-url \"${1}\"`)"
+    curl -X GET "${MUSIC_CONTROL_URL}/songs/artist/`encode-for-url \"${1}\"`" -H "Authorization: Basic ${MUSIC_CONTROL_AUTH}" --data '' --insecure --silent
   else
     echo "No artist specified."
   fi
@@ -68,7 +68,7 @@ delete() {
 
 encode-for-url() {
   # Quick and dirty convert spaces
-  return ${1// /%20}
+  echo ${1// /%20}
 }
 
 #status
