@@ -16,7 +16,14 @@ while true; do
     mpv --http-header-fields="Authorization:Basic ${PLAY_STREAM_AUTH}" --no-video --no-ytdl ${PLAY_STREAM_URL}
   else
     echo "PLAY_STREAM_AUTH not set." 
-    mpv --no-video --no-ytdl ${PLAY_STREAM_URL}
+
+    # If mpv is not available, try mplayer
+    which mpv
+    if [ $? -eq 0 ]; then
+        mpv --no-video --no-ytdl ${PLAY_STREAM_URL}
+    else
+        mplayer -novideo ${PLAY_STREAM_URL}
+    fi
   fi
   echo "sleeping for 10 seconds..."
   sleep 10
