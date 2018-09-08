@@ -5,12 +5,11 @@ import sys
 import argparse
 
 def can_run_applescript():
-  return (subprocess.check_call(['which', 'osascript'],
-      stdout=subprocess.DEVNULL) == 0)
+  return subprocess.call(['which', 'osascript']) == 0
 
 def set_volume(level):
-  return (subprocess.check_call(['osascript', '-e', 'set volume output volume %s' % level],
-      stdout=subprocess.DEVNULL == 0))
+  print('Setting volume to %s' % level)
+  return subprocess.call(['osascript', '-e', 'set volume output volume %s' % level]) == 0
 
 
 def main():
