@@ -32,7 +32,7 @@ end
 
 
 if ARGV[0].nil?
-   puts "usage: #{__FILE__} [ file.flac | --sdcard ]"
+   puts "usage: #{__FILE__} [ file.flac | --sdcard /path/to/sdcard ]"
    exit(1)
 elsif ARGV[0].eql? '--sdcard'
 
