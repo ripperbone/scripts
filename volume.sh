@@ -28,16 +28,16 @@ set_volume() {
 
 usage() {
    cat <<EOF
-usage: `basename ${BASH_SOURCE[0]}` [--mute|--low|--high|--level <percent>]
+usage: $(basename "${BASH_SOURCE[0]}") [--mute|--low|--high|--level <percent>]
 Examples:
-   `basename ${BASH_SOURCE[0]}` --mute
-   `basename ${BASH_SOURCE[0]}` --low
-   `basename ${BASH_SOURCE[0]}` --level 60
+   $(basename "${BASH_SOURCE[0]}") --mute
+   $(basename "${BASH_SOURCE[0]}") --low
+   $(basename "${BASH_SOURCE[0]}") --level 60
 EOF
 }
 
 main() {
-   case $1 in
+   case "$1" in
    "--mute")
       set_volume 0
    ;;
@@ -48,11 +48,11 @@ main() {
       set_volume 70
    ;;
    "--level")
-      if [ -z $2 ]; then
+      if [ -z "$2" ]; then
          usage
          exit 1
       fi
-      set_volume $2
+      set_volume "$2"
    ;;
    *)
       usage
@@ -61,4 +61,4 @@ main() {
    esac
 }
 
-main $@
+main "$@"

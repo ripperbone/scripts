@@ -4,8 +4,7 @@
 
 DESKTOP_PICTURE="/Library/Desktop Pictures/Abstract Shapes.jpg"
 
-which osascript >/dev/null 2>&1
-if [ $? -ne 0 ]; then
+if ! which osascript >/dev/null 2>&1; then
   echo "Can't find Applescript interpreter. Are we on a mac?"
   exit 1
 fi

@@ -1,27 +1,20 @@
 #!/bin/bash
 
+pulseaudio_is_running() {
+   pulseaudio --check
+}
 
 
-# Returns 0 if pulseaudio is running for user running command
-pulseaudio --check
-
-if [ $? -ne 0 ]; then
+if ! pulseaudio_is_running; then
    echo "PULSEAUDIO already stopped."
    exit 0
 fi
 
-
-
 echo "Stopping PULSEAUDIO"
 pulseaudio --kill
+sleep 1
 
-
-# Returns 0 if pulseaudio is running for user running command
-pulseaudio --check
-
-
-if [ $? -ne 0 ]
-then
+if ! pulseaudio_is_running; then
    echo "PULSEAUDIO stopped."
-   exit 1
+   exit 0 
 fi

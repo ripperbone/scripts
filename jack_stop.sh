@@ -1,47 +1,39 @@
 #!/bin/bash
 
+jackd_is_running() {
+   jack_control status > /dev/null 2>&1
+}
 
-# Returns 0 if running
-jack_control status > /dev/null 2>&1
+pulseaudio_is_running() {
+   pulseaudio --check
+}
 
-if [ $? -ne 0 ]; then
+if ! jackd_is_running; then
    echo "JACKD already stopped."
    exit 0
 fi
 
 
-
 echo "Stopping JACKD"
 jack_control stop > /dev/null 2>&1
+sleep 1
 
-
-# Returns 0 if running
-jack_control status > /dev/null 2>&1
-
-
-if [ $? -eq 0 ]
-then
+if jackd_is_running; then
    echo "Could not stop JACKD"
    exit 1
 fi
 
-pulseaudio --check
-
-if [ $? -eq 0 ]; then
+if pulseaudio_is_running; then
    echo "PULSEAUDIO already running."
    exit 0
 fi
 
 echo "Starting PULSEAUDIO"
 pulseaudio --start
+sleep 1
 
 
-# Returns 0 if pulseaudio is running for user running command
-pulseaudio --check
-
-
-if [ $? -ne 0 ]
-then
+if ! pulseaudio_is_running; then
    echo "Could not start PULSEAUDIO"
    exit 1
 fi

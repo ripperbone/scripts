@@ -6,13 +6,11 @@ format-time() {
 
 
 notify-finished() {
-  which notify-send >/dev/null 2>&1
-  if [ $? -eq 0 ]; then
+  if which notify-send >/dev/null 2>&1; then
     notify-send "Done." "The timer has finished."
   fi
 
-  which terminal-notifier >/dev/null 2>&1
-  if [ $? -eq 0 ]; then
+  if which terminal-notifier >/dev/null 2>&1; then
     terminal-notifier -title "Timer" -message "The timer has finished." 
   fi
 }
@@ -29,11 +27,7 @@ if [ $# -ne 1 ]; then
 fi
 
 
-TIME_LEFT=`expr $1 \* 60`
-
-# Quit if bad number given
-
-if [ $? -ne 0 ]; then
+if ! TIME_LEFT=$(( $1 * 60 )); then
    exit 1
 fi
 
@@ -50,7 +44,7 @@ while [ ${TIME_LEFT} -gt 0 ]; do
 
    # wait 1 second and decrement counter
    sleep 1
-   TIME_LEFT=`expr ${TIME_LEFT} - 1`
+   TIME_LEFT=$(( TIME_LEFT - 1 ))
 done
 
 notify-finished
