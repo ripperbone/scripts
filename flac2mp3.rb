@@ -5,7 +5,7 @@ require 'fileutils'
 class String
    def to_wav
       return (File.dirname(self).eql?('.') ?
-            File.basename(self, '.*') + '.wav' : 
+            File.basename(self, '.*') + '.wav' :
             File.join(File.dirname(self), File.basename(self, '.*') + '.wav'))
    end
 
@@ -20,14 +20,14 @@ end
 
 
 def convert_to_mp3(file)
-   `flac -d \"#{file}\"` unless File.exists? file.to_mp3
-   `lame -h -b 192 \"#{file.to_wav}\"` if File.exists? file.to_wav 
-   FileUtils.rm(file.to_wav, :verbose => true) if File.exists? file.to_wav
+   `flac -d \"#{file}\"` unless File.exist? file.to_mp3
+   `lame -h -b 192 \"#{file.to_wav}\"` if File.exist? file.to_wav
+   FileUtils.rm(file.to_wav, verbose: true) if File.exist? file.to_wav
 end
 
 def remove_flac_file(file)
    raise "Extension is not FLAC!" if not File.extname(file).eql? '.flac'
-   FileUtils.rm(file, :verbose => true) if File.exists? file
+   FileUtils.rm(file, verbose: true) if File.exist? file
 end
 
 
@@ -49,11 +49,10 @@ elsif ARGV[0].eql? '--sdcard'
          end
       end
    end
-  
 else
    flac_file = ARGV[0]
 
-   if not File.exists? flac_file
+   if not File.exist? flac_file
       puts "File #{flac_file} does not exist!"
       exit(1)
    end
