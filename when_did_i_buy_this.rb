@@ -6,13 +6,13 @@ require 'json'
 # Find all M4A files in or beneath the working directory and print the date the song was purchased
 
 
-file_info = Array.new
+file_info = []
 
 
 Dir.glob("**/*.m4a") do |file|
    ff = Ffprober::Parser.from_file(file)
    purchase_date = ff.json[:format][:tags][:purchase_date]
-  
+
    file_info << [file, purchase_date] unless purchase_date.nil?
 
 end

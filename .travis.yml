@@ -1,0 +1,5 @@
+language: shell
+script:
+   - bash -c 'shopt -s globstar; shellcheck **/*.sh'
+   - gem install rubocop -v 0.61.1
+   - rubocop
