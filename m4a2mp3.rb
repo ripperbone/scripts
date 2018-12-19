@@ -28,7 +28,7 @@ def convert_to_mp3(file)
 end
 
 def remove_m4a_file(file)
-   raise 'Extension is not M4A!' if not File.extname(file).eql? '.m4a'
+   raise "Extension is not M4A!" if not File.extname(file).eql? '.m4a'
    FileUtils.rm(file, verbose: true) if File.exist? file
 end
 
@@ -39,7 +39,7 @@ if ARGV[0].nil?
 elsif ARGV[0].eql? '--sdcard'
 
    if not ARGV.size.eql? 2 or not File.directory? ARGV[1]
-      puts 'Must provide a valid path to the SD card!'
+      puts "Must provide a valid path to the SD card!"
       exit(1)
    else
 
@@ -64,4 +64,4 @@ else
    convert_to_mp3(m4a_file)
 end
 
-puts 'done.'
+puts "done."
