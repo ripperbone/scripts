@@ -17,7 +17,7 @@ notify-finished() {
 
 usage() {
 cat <<-eos 
-   Usage: timer.sh [number of minutes]
+   usage: $(basename "${BASH_SOURCE[0]}") [number of minutes]
 eos
 }
 
