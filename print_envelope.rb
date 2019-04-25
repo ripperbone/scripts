@@ -8,7 +8,7 @@ require 'tempfile'
 # Print addresses to an envelope so you can mail a letter.
 
 def template
-   return ERB.new <<-eos
+   return ERB.new <<-TEMPLATE
  <%= from_name %>
  <%= from_address_line_1 %>
  <%= from_address_line_2 %>
@@ -19,11 +19,11 @@ def template
                                                            <%= to_name %>
                                                            <%= to_address_line_1 %>
                                                            <%= to_address_line_2 %>
-   eos
+   TEMPLATE
 end
 
 def usage
-   puts <<-eos
+   puts <<-USAGE
 
       usage: #{File.basename(__FILE__)} /path/to/properties.yaml
 
@@ -34,14 +34,14 @@ def usage
       to_address_line_1:
       to_address_line_2:
 
-   eos
+   USAGE
 end
 
 
 properties_hash = {}
 
-if ARGV.size.eql? 1 and File.exists?(ARGV.first)
-   properties_hash = YAML.load(File.read(ARGV.first))
+if ARGV.size.eql? 1 and File.exist?(ARGV.first)
+   properties_hash = YAML.safe_load(File.read(ARGV.first))
 else
    usage
    exit(1)
