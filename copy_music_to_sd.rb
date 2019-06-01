@@ -10,6 +10,9 @@ def copy_songs_to_sdcard(path_to_music, destination, artists_to_exclude, dry_run
       Dir.glob('**/*.{mp3,m4a,flac}').sort.each do |file|
          next if artists_to_exclude.any? { |artist| artist.strip.eql? file.split('/').first }
 
+         # Skip if file is already on SD card
+         next if File.exist? File.join(destination, File.dirname(file), File.basename(file))
+
          # Skip if MP3 of this song is already on SD Card
          next if File.exist? File.join(destination, File.dirname(file), "#{File.basename(file, '.*')}.mp3")
 
