@@ -1,11 +1,17 @@
 #!/usr/bin/env ruby
 
 require 'erb'
-require 'yaml'
 require 'tempfile'
 
 
 # Print addresses to an envelope so you can mail a letter.
+#
+# Run with:
+#   ./print_envelope.rb
+#
+# Or create a file containing the responses 1 per line. Then do:
+#   cat /path/to/file | ./print_envelope.rb
+
 
 def template
    return ERB.new <<-TEMPLATE
@@ -22,30 +28,22 @@ def template
    TEMPLATE
 end
 
-def usage
-   puts <<-USAGE
 
-      usage: #{File.basename(__FILE__)} /path/to/properties.yaml
+properties_hash = {
+   'from_name' => nil,
+   'from_address_line_1' => nil,
+   'from_address_line_2' => nil,
+   'to_name' => nil,
+   'to_address_line_1' => nil,
+   'to_address_line_2' => nil
+}
 
-      from_name:
-      from_address_line_1:
-      from_address_line_2:
-      to_name:
-      to_address_line_1:
-      to_address_line_2:
 
-   USAGE
+properties_hash.each_key do |key|
+   print "#{key.gsub('_', ' ').upcase}? " if STDIN.tty?
+   properties_hash[key] = gets.chomp
 end
 
-
-properties_hash = {}
-
-if ARGV.size.eql? 1 and File.exist?(ARGV.first)
-   properties_hash = YAML.safe_load(File.read(ARGV.first))
-else
-   usage
-   exit(1)
-end
 
 
 file = Tempfile.new(File.basename(__FILE__))
@@ -55,6 +53,7 @@ file.close
 
 puts File.read(file.path)
 
+#exit(0)
 
 # Send to printer.
 system("enscript --landscape --font Helvetica@14 --no-header --media Env10 #{file.path}")
