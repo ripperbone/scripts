@@ -41,7 +41,8 @@ properties_hash = {
 
 properties_hash.each_key do |key|
    print "#{key.gsub('_', ' ').upcase}? " if STDIN.tty?
-   properties_hash[key] = gets.chomp
+   input = gets
+   properties_hash[key] = input.nil? ? nil : input.chomp
 end
 
 
