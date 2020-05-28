@@ -34,4 +34,4 @@ EOF
 }
 
 
-set_wallpaper_gnome "/usr/share/backgrounds/gnome/Icescape.jpg"
+set_wallpaper_gnome "/usr/share/backgrounds/ryan-stone-skykomish-river.jpg"
