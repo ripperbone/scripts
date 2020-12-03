@@ -52,7 +52,8 @@ stop_jackd() {
 start_pulseaudio() {
    if ! pulseaudio_is_running; then
       echo "Starting PULSEAUDIO"
-      pulseaudio --start
+      systemctl --user start pulseaudio.socket
+      systemctl --user start pulseaudio.service
       sleep 1
 
       # check started successfully
@@ -68,7 +69,9 @@ start_pulseaudio() {
 stop_pulseaudio() {
    if pulseaudio_is_running; then
       echo "Stopping PULSEAUDIO"
-      pulseaudio --kill
+
+      # Stopping pulseaudio.socket also stops pulseaudio.service
+      systemctl --user stop pulseaudio.socket
       sleep 1
 
       # check stopped successfully
@@ -113,4 +116,5 @@ case "$1" in
    ;;
 esac
 
+echo "OK."
 exit 0
