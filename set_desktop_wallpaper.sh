@@ -34,4 +34,4 @@ EOF
 }
 
 
-set_wallpaper_gnome "/usr/share/backgrounds/ryan-stone-skykomish-river.jpg"
+set_wallpaper_gnome "${HOME}/Pictures/wallpapers/abstract.png"
