@@ -1,5 +1,5 @@
 language: shell
 script:
    - bash -c 'shopt -s globstar; shellcheck -e SC2236 -e SC2230 **/*.sh'
-   - gem install rubocop -v 0.61.1
+   - gem install rubocop -v 1.6.1
    - rubocop

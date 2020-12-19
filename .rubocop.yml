@@ -16,13 +16,10 @@ Layout/LeadingCommentSpace:
 Metrics/AbcSize:
    Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
    Max: 160
 
 Metrics/MethodLength:
-   Enabled: false
-
-Performance/StringReplacement:
    Enabled: false
 
 Style/AndOr:

@@ -12,9 +12,10 @@ pipeline {
       stage('rubocop') {
          steps {
             sh """
+               gem env
                mkdir -p \${WORKSPACE}/.temp/gems
-               gem install --install-dir \${WORKSPACE}/.temp/gems rubocop -v 0.61.1
-               \${WORKSPACE}/.temp/gems/bin/rubocop
+               gem install --no-document --install-dir \${WORKSPACE}/.temp/gems rubocop -v 1.6.1
+               GEM_PATH=\${WORKSPACE}/.temp/gems \${WORKSPACE}/.temp/gems/bin/rubocop
             """
          }
       }
