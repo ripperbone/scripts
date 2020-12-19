@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'erb'
 require 'tempfile'
@@ -40,7 +41,7 @@ properties_hash = {
 
 
 properties_hash.each_key do |key|
-   print "#{key.gsub('_', ' ').upcase}? " if STDIN.tty?
+   print "#{key.gsub('_', ' ').upcase}? " if $stdin.tty?
    input = gets
    properties_hash[key] = input.nil? ? nil : input.chomp
 end

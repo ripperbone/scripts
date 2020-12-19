@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
+#frozen_string_literal: true
 
 require 'fileutils'
 
 EXCLUDE_ARTISTS_FILE = File.expand_path('~/.exclude_from_music.txt')
 
 
-def copy_songs_to_sdcard(path_to_music, destination, artists_to_exclude, dry_run = true)
+def copy_songs_to_sdcard(path_to_music, destination, artists_to_exclude, dry_run)
    Dir.chdir(path_to_music) do
       Dir.glob('**/*.{mp3,m4a,flac}').sort.each do |file|
          next if artists_to_exclude.any? { |artist| artist.strip.eql? file.split('/').first }

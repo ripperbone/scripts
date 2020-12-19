@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 `git branch`.split("\n").each do |branch|
    next if branch.strip.include? '*' or branch.strip.include? 'master'

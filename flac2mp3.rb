@@ -1,23 +1,21 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'fileutils'
 
 class String
    def to_wav
       return (File.dirname(self).eql?('.') ?
-            File.basename(self, '.*') + '.wav' :
-            File.join(File.dirname(self), File.basename(self, '.*') + '.wav'))
+            "#{File.basename(self, '.*')}.wav" :
+            File.join(File.dirname(self), "#{File.basename(self, '.*')}.wav"))
    end
 
    def to_mp3
       return (File.dirname(self).eql?('.') ?
-          File.basename(self, '.*') + '.mp3' :
-          File.join(File.dirname(self), File.basename(self, '.*') + '.mp3'))
+          "#{File.basename(self, '.*')}.mp3" :
+          File.join(File.dirname(self), "#{File.basename(self, '.*')}.mp3"))
    end
 end
-
-
-
 
 def convert_to_mp3(file)
    `flac -d \"#{file}\"` unless File.exist? file.to_mp3
