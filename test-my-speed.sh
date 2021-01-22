@@ -8,16 +8,22 @@
 #
 # Set the below OUTPUT_FILE variable to the path where you wish to store the results.
 
-OUTPUT_FILE="${HOME}/Documents/notes/speedtest_results.txt"
+log_error() {
+   >&2 echo "$1"
+}
+
+if [ -z "${OUTPUT_FILE}" ]; then
+   OUTPUT_FILE="${HOME}/Documents/notes/speedtest_results.txt"
+fi
 
 if [ ! -d "$(dirname "${OUTPUT_FILE}")" ]; then
-   echo "The directory $(dirname "${OUTPUT_FILE}") does not exist. If you really want to output results there, please create it."
+   log_error "The directory $(dirname "${OUTPUT_FILE}") does not exist. If you really want to output results there, please create it."
    exit 1
 fi
 
 
 if [ ! "$(command -v speedtest-cli)" ]; then
-   echo "This script requires 'speedtest-cli' in the PATH."
+   log_error "This script requires 'speedtest-cli' in the PATH."
    exit 1
 fi
 
