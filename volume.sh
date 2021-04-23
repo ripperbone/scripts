@@ -19,14 +19,10 @@ set_volume() {
    if can_run_applescript; then
       osascript -e "set volume output volume ${LEVEL}"
    elif can_run_pactl; then
-      SINK="$(pactl list short sinks | grep "RUNNING" | head -1 | cut -f1)"
-
-      if [ -z "${SINK}" ]; then
-         echo "Could not determine the active audio sink"
-         exit 1
-      fi
-
-      pactl set-sink-volume "${SINK}" "${LEVEL}%"
+      for SINK in $(pactl list short sinks | cut -f1); do
+         echo "Setting volume for sink ${SINK} to ${LEVEL}%"
+         pactl set-sink-volume "${SINK}" "${LEVEL}%"
+      done
    else
       echo "Not implemented yet!"
       exit 1
