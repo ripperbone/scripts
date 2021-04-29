@@ -20,8 +20,8 @@ end
 def convert_to_mp3(file)
    # puts "faad \"#{file}\"" unless File.exist? file.to_mp3
    `faad \"#{file}\"` unless File.exist? file.to_mp3
-   # puts "lame -h -b 192 \"#{file.to_wav}\"" if File.exist? file.to_wav
-   `lame -h -b 192 \"#{file.to_wav}\"` if File.exist? file.to_wav
+   # puts "lame -h -b 320 \"#{file.to_wav}\"" if File.exist? file.to_wav
+   `lame -h -b 320 \"#{file.to_wav}\"` if File.exist? file.to_wav
    FileUtils.rm(file.to_wav, verbose: true) if File.exist? file.to_wav
 end
 
