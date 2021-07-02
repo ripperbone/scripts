@@ -3,15 +3,14 @@
 
 require 'erb'
 require 'tempfile'
+require 'optparse'
 
 
 # Print addresses to an envelope so you can mail a letter.
 #
 # Run with:
-#   ./print_envelope.rb
+#   ./print_envelope.rb [options]
 #
-# Or create a file containing the responses 1 per line. Then do:
-#   cat /path/to/file | ./print_envelope.rb
 
 
 def template
@@ -29,35 +28,51 @@ def template
    TEMPLATE
 end
 
-
-properties_hash = {
-   'from_name' => nil,
-   'from_address_line_1' => nil,
-   'from_address_line_2' => nil,
-   'to_name' => nil,
-   'to_address_line_1' => nil,
-   'to_address_line_2' => nil
+options = {
+   :copies => 1,
+   :from_name => nil,
+   :from_address_line_1 => nil,
+   :from_address_line_2 => nil,
+   :to_name => nil,
+   :to_address_line_1 => nil,
+   :to_address_line_2 => nil
 }
-
-
-properties_hash.each_key do |key|
-   print "#{key.gsub('_', ' ').upcase}? " if $stdin.tty?
-   input = gets
-   properties_hash[key] = input.nil? ? nil : input.chomp
-end
-
+OptionParser.new do |opts|
+   opts.on("-c NUM", "--copies", Integer, "Specify number of copies") do |v|
+      options[:copies] = v
+   end
+   opts.on("--from-name STRING") do |v|
+      options[:from_name] = v
+   end
+   opts.on("--from-address-line-1 STRING") do |v|
+      options[:from_address_line_1] = v
+   end
+   opts.on("--from-address-line-2 STRING") do |v|
+      options[:from_address_line_2] = v
+   end
+   opts.on("--to-name STRING") do |v|
+      options[:to_name] = v
+   end
+   opts.on("--to-address-line-1 STRING") do |v|
+      options[:to_address_line_1] = v
+   end
+   opts.on("--to-address-line-2 STRING") do |v|
+      options[:to_address_line_2] = v
+   end
+end.parse!
 
 
 file = Tempfile.new(File.basename(__FILE__))
-file.write(template.result_with_hash(properties_hash))
+file.write(template.result_with_hash(options))
 file.close
 
 
 puts File.read(file.path)
 
-#exit(0)
-
 # Send to printer.
-system("enscript --landscape --font Helvetica@14 --no-header --media Env10 #{file.path}")
+options[:copies].times do
+   puts "enscript --landscape --font Helvetica@14 --no-header --media Env10 #{file.path}"
+   system("enscript --landscape --font Helvetica@14 --no-header --media Env10 #{file.path}")
+end
 
 puts "done."
