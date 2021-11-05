@@ -15,9 +15,21 @@ pipeline {
                gem env
                mkdir -p \${WORKSPACE}/.temp/gems
                gem install --no-document --install-dir \${WORKSPACE}/.temp/gems rubocop -v 1.6.1
-               GEM_PATH=\${WORKSPACE}/.temp/gems \${WORKSPACE}/.temp/gems/bin/rubocop
+               GEM_PATH=\${WORKSPACE}/.temp/gems \${WORKSPACE}/.temp/gems/bin/rubocop --format html -o reports/rubocop.html
             """
          }
+      }
+   }
+   post {
+      always {
+         publishHTML(target: [
+            allowMissing: false,
+            alwaysLinkToLastBuild: false,
+            keepAll: false,
+            reportDir: 'reports',
+            reportFiles: 'rubocop.html',
+            reportName: 'Rubocop',
+            reportTitles: 'Rubocop_Results'])
       }
    }
 }
