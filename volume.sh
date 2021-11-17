@@ -19,8 +19,15 @@ set_volume() {
    if can_run_applescript; then
       osascript -e "set volume output volume ${LEVEL}"
    elif can_run_pactl; then
-      for SINK in $(pactl list short sinks | cut -f1); do
-         echo "Setting volume for sink ${SINK} to ${LEVEL}%"
+      pactl list short sinks | while read -r LINE; do
+         SINK=$(echo "${LINE}" | cut -d$'\t' -f1)
+         SINK_NAME=$(echo "${LINE}" | cut -d$'\t' -f2)
+
+         # skip setting volume for sinks
+         if [ "${SINK_NAME}" = "fifo_output" ]; then
+            continue
+         fi
+         echo "Setting volume for sink ${SINK} [${SINK_NAME}] to ${LEVEL}%"
          pactl set-sink-volume "${SINK}" "${LEVEL}%"
       done
    else
