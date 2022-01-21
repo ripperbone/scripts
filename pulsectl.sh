@@ -5,7 +5,7 @@
 
 usage() {
 cat <<-eos
-   usage: $(basename "${BASH_SOURCE[0]}") [--stop|--start|--restart|--jack-stop|--jack-start]
+   usage: $(basename "${BASH_SOURCE[0]}") [--stop|--start|--restart|--jack-stop|--jack-start|--snapclient-stop|--snapclient-start]
 eos
 }
 
@@ -15,6 +15,10 @@ jackd_is_running() {
 
 pulseaudio_is_running() {
    pulseaudio --check
+}
+
+snapclient_is_running() {
+   pgrep -x snapclient > /dev/null
 }
 
 start_jackd() {
@@ -84,6 +88,24 @@ stop_pulseaudio() {
    fi
 }
 
+stop_snapclient() {
+   if snapclient_is_running; then
+      echo "Stopping SNAPCLIENT"
+      systemctl --user stop snapclient
+   else
+      echo "SNAPCLIENT already stopped"
+   fi
+}
+
+start_snapclient() {
+   if ! snapclient_is_running; then
+      echo "Starting SNAPCLIENT"
+      systemctl --user start snapclient
+   else
+      echo "SNAPCLIENT already running"
+   fi
+}
+
 if [ $# -ne 1 ]; then
    usage
    exit 1
@@ -91,24 +113,36 @@ fi
 
 case "$1" in
 --stop)
+   stop_snapclient
    stop_pulseaudio
    ;;
 --start)
    stop_jackd
    start_pulseaudio
+   start_snapclient
    ;;
 --jack-start)
+   stop_snapclient
    stop_pulseaudio
    start_jackd
    ;;
 --jack-stop)
    stop_jackd
    start_pulseaudio
+   start_snapclient
+   ;;
+--snapclient-stop)
+   stop_snapclient
+   ;;
+--snapclient-start)
+   start_snapclient
    ;;
 --restart)
+   stop_snapclient
    stop_pulseaudio
    stop_jackd
    start_pulseaudio
+   start_snapclient
    ;;
 *)
    usage
