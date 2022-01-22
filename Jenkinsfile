@@ -12,10 +12,21 @@ pipeline {
       stage('rubocop') {
          steps {
             sh """
+               mkdir -p reports
                gem env
                mkdir -p \${WORKSPACE}/.temp/gems
                gem install --no-document --install-dir \${WORKSPACE}/.temp/gems rubocop -v 1.6.1
-               GEM_PATH=\${WORKSPACE}/.temp/gems \${WORKSPACE}/.temp/gems/bin/rubocop --format html -o reports/rubocop.html
+               GEM_PATH=\${WORKSPACE}/.temp/gems \${WORKSPACE}/.temp/gems/bin/rubocop --format html -o reports/rubocop/rubocop.html
+            """
+         }
+      }
+      stage('flake8') {
+         steps {
+            sh """
+               mkdir -p reports
+               pip3 install --target=\${WORKSPACE}/.temp/pip flake8
+               pip3 install --target=\${WORKSPACE}/.temp/pip flake8-html
+               PYTHONPATH=\${WORKSPACE}/.temp/pip \${WORKSPACE}/.temp/pip/bin/flake8 --exclude=.temp/ --format=html --htmldir reports/flake8
             """
          }
       }
@@ -24,12 +35,11 @@ pipeline {
       always {
          publishHTML(target: [
             allowMissing: false,
-            alwaysLinkToLastBuild: false,
+            alwaysLinkToLastBuild: true,
             keepAll: false,
             reportDir: 'reports',
-            reportFiles: 'rubocop.html',
-            reportName: 'Rubocop',
-            reportTitles: 'Rubocop_Results'])
+            reportFiles: 'rubocop/rubocop.html,flake8/index.html',
+            reportName: 'Reports'])
       }
    }
 }
