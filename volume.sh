@@ -36,17 +36,51 @@ set_volume() {
    fi
 }
 
+set_default_sink() {
+   SINK_DESCRIPTION=$1
+   if can_run_pactl; then
+      pactl list short sinks | while read -r LINE; do
+         SINK=$(echo "${LINE}" | cut -d$'\t' -f1)
+         SINK_NAME=$(echo "${LINE}" | cut -d$'\t' -f2)
+
+         if echo "${SINK_NAME}" | grep -i "${SINK_DESCRIPTION}" >/dev/null; then
+            echo "Setting default sink to ${SINK_NAME}"
+            pactl set-default-sink "${SINK}"
+         fi
+      done
+   else
+      echo "Not implemented yet!"
+      exit 1
+   fi
+}
+
+get_default_sink() {
+   if can_run_pactl; then
+      DEFAULT_SINK=$(pactl info | grep -Po "^Default Sink: \K[A-z0-9\.-]+$")
+
+      echo "${DEFAULT_SINK}"
+   else
+      echo "Not implemented yet!"
+      exit
+   fi
+}
+
 usage() {
    cat <<EOF
-usage: $(basename "${BASH_SOURCE[0]}") [--mute|--low|--high|--level <percent>]
-Examples:
-   $(basename "${BASH_SOURCE[0]}") --mute
-   $(basename "${BASH_SOURCE[0]}") --low
-   $(basename "${BASH_SOURCE[0]}") --level 60
+usage: $(basename "${BASH_SOURCE[0]}") [arg]
+   --mute               mute the volume
+   --low                set volume to a low level
+   --high               set volume to a high level
+   --level <percent>    specify a level at which to set the volume
+   --which-sink         check the current audio output sink
+   --set-sink-hdmi      set sink to hdmi
+   --set-sink-headset   set sink to headset
+   --set-sink-lineout   set sink to lineout
 EOF
 }
 
 main() {
+
    case "$1" in
    "--mute")
       set_volume 0
@@ -63,6 +97,18 @@ main() {
          exit 1
       fi
       set_volume "$2"
+   ;;
+   "--which-sink")
+      get_default_sink
+   ;;
+   "--set-sink-hdmi")
+      set_default_sink "hdmi-stereo"
+   ;;
+   "--set-sink-lineout")
+      set_default_sink "analog-stereo"
+   ;;
+   "--set-sink-headset")
+      set_default_sink "bluez"
    ;;
    *)
       usage
