@@ -11,12 +11,12 @@ notify-finished() {
   fi
 
   if which terminal-notifier >/dev/null 2>&1; then
-    terminal-notifier -title "Timer" -message "The timer has finished." 
+    terminal-notifier -title "Timer" -message "The timer has finished."
   fi
 }
 
 usage() {
-cat <<-eos 
+cat <<-eos
    usage: $(basename "${BASH_SOURCE[0]}") [number of minutes]
 eos
 }
@@ -31,6 +31,9 @@ if ! TIME_LEFT=$(( $1 * 60 )); then
    exit 1
 fi
 
+NOW_SECONDS="$(date +%s)"
+END_TIME=$((NOW_SECONDS + TIME_LEFT))
+
 which lolcat >/dev/null 2>&1
 USE_COLORS=$?
 
@@ -42,9 +45,10 @@ while [ ${TIME_LEFT} -gt 0 ]; do
       format-time ${TIME_LEFT}
    fi
 
-   # wait 1 second and decrement counter
    sleep 1
-   TIME_LEFT=$(( TIME_LEFT - 1 ))
+
+   NOW_SECONDS="$(date +%s)"
+   TIME_LEFT=$((END_TIME - NOW_SECONDS))
 done
 
 notify-finished
