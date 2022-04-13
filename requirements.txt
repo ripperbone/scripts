@@ -1,0 +1,4 @@
+flake8
+flake8-html
+Jinja2==3.0.3
+MarkupSafe==2.0.1

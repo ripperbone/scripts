@@ -24,8 +24,7 @@ pipeline {
          steps {
             sh """
                mkdir -p reports
-               pip3 install --target=\${WORKSPACE}/.temp/pip flake8
-               pip3 install --target=\${WORKSPACE}/.temp/pip flake8-html
+               pip3 install --target=\${WORKSPACE}/.temp/pip -r requirements.txt
                PYTHONPATH=\${WORKSPACE}/.temp/pip \${WORKSPACE}/.temp/pip/bin/flake8 --exclude=.temp/ --format=html --htmldir reports/flake8
             """
          }
