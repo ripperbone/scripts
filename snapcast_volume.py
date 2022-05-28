@@ -7,6 +7,9 @@ import argparse
 import sys
 
 
+
+MIN_VOLUME = 70
+
 def set_volume(config, client_id, volume=None, mute=False):
 
    volume_params = {"muted": mute}
@@ -93,13 +96,22 @@ def main():
             set_volume(config, client_id=client_id, mute=False)
 
       elif args.me:
-         set_volume(config, client_id=get_this_client(config), mute=False)
+         this_client_id = get_this_client(config)
+
+         current_volume = get_client_status(config, this_client_id)["result"]["client"]["config"]["volume"]["percent"]
+         volume_level = MIN_VOLUME if current_volume < MIN_VOLUME else current_volume
+
+         set_volume(config, client_id=this_client_id, volume=volume_level, mute=False)
 
       elif args.client:
          for client_name, client_id in get_clients(config).items():
             if client_name == args.client:
+
+               current_volume = get_client_status(config, client_id)["result"]["client"]["config"]["volume"]["percent"]
+               volume_level = MIN_VOLUME if current_volume < MIN_VOLUME else current_volume
+
                print(client_name)
-               set_volume(config, client_id=client_id, mute=False)
+               set_volume(config, client_id=client_id, volume=volume_level, mute=False)
 
    elif args.command == "mute":
       if args.all:
