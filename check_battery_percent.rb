@@ -16,8 +16,8 @@ end
 
 def battery_status(device_name)
    `upower -i #{device_name}`.split("\n")
-                             .select { |it| it.include? ":" }
-                             .map { |it| [it.split(':')[0].strip, it.split(':')[1].strip] }.to_h
+      .select { |it| it.include? ":" }
+      .map { |it| [it.split(':')[0].strip, it.split(':')[1].strip] }.to_h
 end
 
 def pretty_hash(hash, indent = 0)

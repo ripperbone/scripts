@@ -7,8 +7,8 @@ import argparse
 import sys
 
 
-
 MIN_VOLUME = 70
+
 
 def set_volume(config, client_id, volume=None, mute=False):
 

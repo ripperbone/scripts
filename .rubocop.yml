@@ -13,6 +13,9 @@ Layout/IndentationWidth:
 Layout/LeadingCommentSpace:
    Enabled: false
 
+Layout/MultilineMethodCallIndentation:
+   EnforcedStyle: indented
+
 Metrics/AbcSize:
    Enabled: false
 
