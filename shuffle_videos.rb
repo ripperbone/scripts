@@ -4,6 +4,9 @@
 require 'optparse'
 require 'tempfile'
 
+def shuffle(selections, count)
+   count.nil? ? selections.shuffle : selections.sample(count)
+end
 
 options = { count: 1 }
 OptionParser.new do |opts|
@@ -16,16 +19,21 @@ OptionParser.new do |opts|
    opts.on("-c NUM", "--count NUM", Integer, "the number of selections to add to playlist") do |v|
       options[:count] = v
    end
+   opts.on("-a", "--all", TrueClass, "add all selections to the playlist") do |_v|
+      options[:count] = nil
+   end
    opts.on("-m", "--mute", TrueClass, "mute video sound") do |v|
       options[:mute] = v
    end
 end.parse!
 
-selections = Dir.glob("**/*.{mp4,mov,m4v,mkv,avi}")
+selections = shuffle(
+   Dir.glob("**/*.{mp4,mov,m4v,mkv,avi}")
    .uniq
    .reject { |file| !options[:include].nil? and !options[:include].match(file) }
-   .reject { |file| !options[:exclude].nil? and options[:exclude].match(file) }
-   .sample(options[:count])
+   .reject { |file| !options[:exclude].nil? and options[:exclude].match(file) },
+   options[:count]
+)
 exit(0) if selections.nil? or selections.size.eql?(0)
 puts selections
 
