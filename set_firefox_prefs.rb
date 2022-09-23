@@ -3,6 +3,28 @@
 
 require 'fileutils'
 
+
+def write_prefs(settings_dir)
+   prefs_file = File.join(settings_dir, "user.js")
+   puts prefs_file
+
+   File.open(prefs_file, 'a') do |prefs|
+      prefs << %{
+   user_pref("app.shield.optoutstudies.enabled", false);
+   user_pref("browser.newtabpage.enabled", false);
+   user_pref("browser.search.suggest.enabled", false);
+   user_pref("browser.startup.homepage", "about:blank");
+   user_pref("datareporting.healthreport.uploadEnabled", false);
+   user_pref("doh-rollout.disable-heuristics", true);
+   user_pref("extensions.formautofill.creditCards.enabled", false);
+   user_pref("media.videocontrols.picture-in-picture.video-toggle.enabled", false);
+   user_pref("network.trr.mode", 5);
+   user_pref("network.trr.uri", "https://mozilla.cloudflare-dns.com/dns-query");
+   user_pref("signon.rememberSignons", false);
+   }
+   end
+end
+
 if !`pgrep firefox`.empty?
    puts "There is already a running firefox process. Close it first"
    exit(1)
@@ -16,6 +38,11 @@ if File.directory?("#{Dir.home}/.mozilla/firefox")
    FileUtils.rm_r("#{Dir.home}/.mozilla/firefox", verbose: true)
 end
 
+if File.directory?("#{Dir.home}/snap/firefox/common/.mozilla/firefox")
+   puts "Settings directory exists under ~/snap. Deleting it..."
+   FileUtils.rm_r("#{Dir.home}/snap/firefox/common/.mozilla/firefox", verbose: true)
+end
+
 puts "Starting firefox to create default settings"
 pid = Process.spawn("firefox --headless", out: "/dev/null", err: "/dev/null")
 puts pid
@@ -25,28 +52,8 @@ puts "Quitting firefox..."
 Process.kill('HUP', pid)
 
 settings_dir = Dir.glob("#{Dir.home}/.mozilla/firefox/*.default-release").first
+snap_settings_dir = Dir.glob("#{Dir.home}/snap/firefox/common/.mozilla/firefox/*.default").first
 
-if settings_dir.nil?
-   puts "Firefox settings directory does not exist"
-   exit(1)
-end
 
-prefs_file = File.join(settings_dir, "user.js")
-
-puts prefs_file
-
-File.open(prefs_file, 'a') do |prefs|
-   prefs << %{
-user_pref("app.shield.optoutstudies.enabled", false);
-user_pref("browser.newtabpage.enabled", false);
-user_pref("browser.search.suggest.enabled", false);
-user_pref("browser.startup.homepage", "about:blank");
-user_pref("datareporting.healthreport.uploadEnabled", false);
-user_pref("doh-rollout.disable-heuristics", true);
-user_pref("extensions.formautofill.creditCards.enabled", false);
-user_pref("media.videocontrols.picture-in-picture.video-toggle.enabled", false);
-user_pref("network.trr.mode", 5);
-user_pref("network.trr.uri", "https://mozilla.cloudflare-dns.com/dns-query");
-user_pref("signon.rememberSignons", false);
-}
-end
+write_prefs(settings_dir) unless settings_dir.nil?
+write_prefs(snap_settings_dir) unless snap_settings_dir.nil?
