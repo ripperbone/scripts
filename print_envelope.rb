@@ -31,6 +31,16 @@ def template
    TEMPLATE
 end
 
+def binary_missing?(bin)
+   ENV['PATH'].split(File::PATH_SEPARATOR).each do |path_dir|
+      bin_path = File.join(path_dir, bin)
+      if File.executable?(bin_path) && !File.directory?(bin_path)
+         return false # not missing
+      end
+   end
+   return true
+end
+
 options = {
    copies: 1,
    from_name: nil,
@@ -79,6 +89,10 @@ OptionParser.new do |opts|
 
 end.parse!
 
+if binary_missing?("enscript")
+   puts "enscript not found"
+   exit(1)
+end
 
 file = Tempfile.new(File.basename(__FILE__))
 file.write(template.result_with_hash(options))
