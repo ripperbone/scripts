@@ -67,6 +67,7 @@ def main():
    unmute_subparser = subparsers.add_parser("unmute", help="Unmute client sound")
    unmute_group = unmute_subparser.add_mutually_exclusive_group(required=True)
    unmute_group.add_argument("--me", action="store_true", help="the current client")
+   unmute_group.add_argument("--single", action="store_true", help="only the current client (mute other clients)")
    unmute_group.add_argument("--all", action="store_true", help="all clients")
    unmute_group.add_argument("--client", type=str, help="specify a client by name")
 
@@ -83,7 +84,7 @@ def main():
 
    config = {"host": "localhost", "port": 1780}
 
-   if args.command == "list":
+   if args.command == "list" or args.command is None:
       results = {}
       for client_name, client_id in get_clients(config).items():
          results[client_name] = get_client_status(config, client_id)["result"]["client"]["config"]["volume"]
@@ -102,6 +103,17 @@ def main():
          volume_level = MIN_VOLUME if current_volume < MIN_VOLUME else current_volume
 
          set_volume(config, client_id=this_client_id, volume=volume_level, mute=False)
+
+      elif args.single:
+         this_client_id = get_this_client(config)
+
+         current_volume = get_client_status(config, this_client_id)["result"]["client"]["config"]["volume"]["percent"]
+         volume_level = MIN_VOLUME if current_volume < MIN_VOLUME else current_volume
+         set_volume(config, client_id=this_client_id, volume=volume_level, mute=False)
+
+         for client_name, client_id in get_clients(config).items():
+            if client_id != this_client_id:
+               set_volume(config, client_id=client_id, mute=True)
 
       elif args.client:
          for client_name, client_id in get_clients(config).items():
