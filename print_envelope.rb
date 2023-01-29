@@ -49,7 +49,8 @@ options = {
    to_name: nil,
    to_address_line1: nil,
    to_address_line2: nil,
-   dry_run: false
+   dry_run: false,
+   json_files: []
 }
 OptionParser.new do |opts|
    opts.on("-c NUM", "--copies", Integer, "Specify number of copies") do |v|
@@ -74,13 +75,7 @@ OptionParser.new do |opts|
       options[:to_address_line2] = v
    end
    opts.on("--json-file STRING") do |v|
-      if File.exist?(v)
-         json_data = JSON.parse(File.read(v), symbolize_names: true)
-         options = options.merge(json_data)
-      else
-         puts "JSON file not found!"
-         exit(1)
-      end
+      options[:json_files] << v
    end
    opts.on("--dry-run", TrueClass, "do not send to printer") do |v|
       options[:dry_run] = v
@@ -88,6 +83,19 @@ OptionParser.new do |opts|
 
 
 end.parse!
+
+options[:json_files].each do |file|
+   if file.eql?("-")
+      json_data = JSON.parse(ARGF.read, symbolize_names: true)
+      options = options.merge(json_data)
+   elsif File.exist?(file)
+      json_data = JSON.parse(File.read(file), symbolize_names: true)
+      options = options.merge(json_data)
+   else
+      puts "JSON file not found!"
+      exit(1)
+   end
+end
 
 if binary_missing?("enscript")
    puts "enscript not found"
