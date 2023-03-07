@@ -26,7 +26,6 @@ logFormatter = logging.Formatter("[ %(asctime)s ] %(levelname)s %(message)s")
 
 # set up sysout logging
 streamHandler = logging.StreamHandler(sys.stdout)
-streamHandler.setFormatter(logFormatter)
 rootLogger.addHandler(streamHandler)
 
 # set up file logging if the log location exists
