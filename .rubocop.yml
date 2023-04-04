@@ -16,6 +16,12 @@ Layout/LeadingCommentSpace:
 Layout/MultilineMethodCallIndentation:
    EnforcedStyle: indented
 
+Layout/SpaceInsideBlockBraces:
+   Enabled: false
+
+Layout/SpaceAroundBlockParameters:
+   Enabled: true
+
 Metrics/AbcSize:
    Enabled: false
 
