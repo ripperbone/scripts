@@ -28,21 +28,20 @@ logFormatter = logging.Formatter("[ %(asctime)s ] %(levelname)s %(message)s")
 streamHandler = logging.StreamHandler(sys.stdout)
 rootLogger.addHandler(streamHandler)
 
-# set up file logging if the log location exists
-log_file = Path("/var/log/todoist/todoist.log")
-if log_file.parent.is_dir():
-   fileHandler = logging.FileHandler(log_file)
-   fileHandler.setFormatter(logFormatter)
-   rootLogger.addHandler(fileHandler)
 
 TOKEN = read_key(os.path.join(os.path.expanduser("~"), ".keys", "todoist"))
 
 
-def add_task(task):
+def add_task(task, project_id=None):
    logging.info(f"Adding task: {task}")
 
+   request_body = {"content": task, "due_string": "today"}
+
+   if project_id is not None:
+      request_body["project_id"] = project_id
+
    res = requests.post("https://api.todoist.com/rest/v2/tasks",
-      json={"content": task, "due_string": "today"},
+      json=request_body,
       headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
 
    if res.status_code == 200:
@@ -106,9 +105,11 @@ def delete_task(task_id):
 
 def main():
    parser = argparse.ArgumentParser(description="script for adding Todoist tasks")
+   parser.add_argument("--log", type=str, help="log output to file")
    subparsers = parser.add_subparsers(dest='sub_command')
    add_parser = subparsers.add_parser("add")
    add_parser.add_argument("task", type=str, help="the description of the task")
+   add_parser.add_argument("--project_id", type=str, help="the id of the project for the task")
    subparsers.add_parser("projects")
    list_parser = subparsers.add_parser("list")
    list_parser.add_argument("--project_id", type=str, help="the id of the project to list tasks")
@@ -119,8 +120,13 @@ def main():
 
    args = parser.parse_args()
 
+   if args.log is not None:
+      fileHandler = logging.FileHandler(args.log)
+      fileHandler.setFormatter(logFormatter)
+      rootLogger.addHandler(fileHandler)
+
    if args.sub_command == "add":
-      add_task(args.task)
+      add_task(args.task, args.project_id)
    elif args.sub_command == "projects":
       for project in get_projects():
          print("%s: %s" % (str(project['id']).rjust(15), project['name']))

@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 
+import argparse
 import requests
 import sys
 import logging
 import os
 
-log_file = "/var/log/todoist/todoist.log"
+rootLogger = logging.getLogger()
+rootLogger.setLevel(logging.INFO)
+logFormatter = logging.Formatter("[ %(asctime)s ] %(levelname)s %(message)s")
 
-logging.basicConfig(filename=log_file, encoding="utf-8", level=logging.INFO,
-   format="[ %(asctime)s ] %(levelname)s %(message)s")
-
-# log to stdout in addition to file
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+# set up sysout logging
+streamHandler = logging.StreamHandler(sys.stdout)
+rootLogger.addHandler(streamHandler)
 
 
 def add_task(task):
@@ -57,6 +58,16 @@ def get_weather():
 
 
 def main():
+   parser = argparse.ArgumentParser(description="add reminders to wash car when the weather is nice")
+   parser.add_argument("--log", type=str, help="log output to file")
+
+   args = parser.parse_args()
+
+   if args.log is not None:
+      fileHandler = logging.FileHandler(args.log)
+      fileHandler.setFormatter(logFormatter)
+      rootLogger.addHandler(fileHandler)
+
    weather_json = get_weather()
 
    if weather_json is None:
