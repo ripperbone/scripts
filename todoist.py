@@ -45,7 +45,7 @@ def add_task(task, project_id=None):
       headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
 
    if res.status_code == 200:
-      logging.info("Success! Status code 200.")
+      logging.info(f"Adding task: {task} -> Success. Status code 200.")
    else:
       logging.error(res.status_code)
       logging.error(res.content)
