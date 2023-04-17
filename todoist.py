@@ -93,7 +93,7 @@ def close_task(task_id):
 def delete_task(task_id):
    logging.info(f"Deleting task {task_id}...")
 
-   res = requests.post(f"https://api.todoist.com/rest/v2/tasks/{task_id}/close",
+   res = requests.delete(f"https://api.todoist.com/rest/v2/tasks/{task_id}",
       headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
 
    if res.status_code == 204:
