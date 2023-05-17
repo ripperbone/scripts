@@ -37,6 +37,10 @@ def get_status(config):
    return res.json()
 
 
+def get_stream_info(config):
+   return get_status(config)["result"]["server"]["streams"]
+
+
 def get_clients(config):
    # Look up client id by hostname
    results = {}
@@ -65,6 +69,7 @@ def main():
    mute_group.add_argument("--client", type=str, help="specify a client by name")
 
    unmute_subparser = subparsers.add_parser("unmute", help="Unmute client sound")
+   unmute_subparser.add_argument("--not-playing", action="store_true", help="only unmute if stream is not playing")
    unmute_group = unmute_subparser.add_mutually_exclusive_group(required=True)
    unmute_group.add_argument("--me", action="store_true", help="the current client")
    unmute_group.add_argument("--single", action="store_true", help="only the current client (mute other clients)")
@@ -91,6 +96,13 @@ def main():
       print(json.dumps(results, indent=2))
 
    elif args.command == "unmute":
+      if args.not_playing:
+         for stream in get_stream_info(config):
+            if stream["status"] == "playing":
+               print("PLAYING")
+               return
+         print("NOT PLAYING")
+
       if args.all:
          for client_name, client_id in get_clients(config).items():
             print(client_name)
