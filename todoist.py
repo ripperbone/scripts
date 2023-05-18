@@ -129,15 +129,15 @@ def main():
       add_task(args.task, args.project_id)
    elif args.sub_command == "projects":
       for project in get_projects():
-         print("%s: %s" % (str(project['id']).rjust(15), project['name']))
+         print("%s\t%s" % (str(project['id']), project['name']))
    elif args.sub_command == "list":
       if args.project_id is None:
          for project in filter(lambda p: p["is_inbox_project"] is True, get_projects()):
             for task in get_tasks(project['id']):
-               print("%s: %s" % (str(task['id']).rjust(15), task['content']))
+               print("%s\t%s" % (str(task['id']), task['content']))
       else:
          for task in get_tasks(args.project_id):
-            print("%s: %s" % (str(task['id']).rjust(15), task['content']))
+            print("%s\t%s" % (str(task['id']), task['content']))
 
    elif args.sub_command == "close":
       close_task(args.task_id)
