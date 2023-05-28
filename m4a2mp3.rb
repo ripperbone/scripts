@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
 require 'fileutils'
 
 class String
@@ -30,18 +31,21 @@ def remove_m4a_file(file)
    FileUtils.rm(file, verbose: true) if File.exist? file
 end
 
+options = {}
+parser = OptionParser.new do |opts|
+   opts.on("--file FILE", String, "the m4a file to convert to mp3") do |v|
+      options[:file] = v
+   end
+   opts.on("--sdcard PATH", String, "the path to the SD card") do |v|
+      options[:path_to_sdcard] = v
+   end
+end
+parser.parse!
 
-if ARGV[0].nil?
-   puts "usage: #{__FILE__} [ file.m4a | --sdcard /path/to/sdcard ]"
-   exit(1)
-elsif ARGV[0].eql? '--sdcard'
+if !options[:path_to_sdcard].nil? and !options[:path_to_sdcard].empty?
 
-   if not ARGV.size.eql? 2 or not File.directory? ARGV[1]
-      puts "Must provide a valid path to the SD card!"
-      exit(1)
-   else
-
-      Dir.chdir(ARGV[1]) do
+   if File.directory?(options[:path_to_sdcard])
+      Dir.chdir(options[:path_to_sdcard]) do
          Dir.glob('**/*.m4a') do |file|
             Dir.chdir(File.dirname(file)) do
                convert_to_mp3(File.basename(file))
@@ -49,17 +53,22 @@ elsif ARGV[0].eql? '--sdcard'
             end
          end
       end
-   end
-
-else
-   m4a_file = ARGV[0]
-
-   if not File.exist? m4a_file
-      puts "File #{m4a_file} does not exist!"
+   else
+      puts "Must provide a valid path to the SD card!"
       exit(1)
    end
 
-   convert_to_mp3(m4a_file)
+elsif !options[:file].nil? and !options[:file].empty?
+
+   if not File.exist?(options[:file])
+      puts "File #{options[:file]} does not exist!"
+      exit(1)
+   end
+
+   convert_to_mp3(options[:file])
+else
+   puts parser.help
+   exit(1)
 end
 
 puts "done."
