@@ -8,7 +8,6 @@ from selenium.common.exceptions import SessionNotCreatedException
 
 import datetime
 import os
-import redis
 import subprocess
 import sys
 import tempfile
@@ -16,9 +15,11 @@ from time import sleep
 
 
 def get_login_info():
-   data = redis.Redis().mget(["modem/username", "modem/password"])
-   return {"username": data[0].decode("utf-8"), "password": data[1].decode("utf-8")}
-
+   with open(os.path.join(os.path.expanduser("~"), ".keys", "modem")) as f:
+      credentials = f.read().strip().split("/")
+   if len(credentials) != 2:
+      raise Exception(f"size of credentials expected to be: 2 was: {len(credentials)}")
+   return {"username": credentials[0], "password": credentials[1]}
 
 def get_modem_log(login_username, login_password):
    chrome_options = Options()
