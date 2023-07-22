@@ -43,6 +43,11 @@ if File.directory?("#{Dir.home}/snap/firefox/common/.mozilla/firefox")
    FileUtils.rm_r("#{Dir.home}/snap/firefox/common/.mozilla/firefox", verbose: true)
 end
 
+if File.directory?("#{Dir.home}/snap/firefox/common/.cache/mozilla/firefox")
+   puts "cache directory exists under ~/snap. Deleting it..."
+   FileUtils.rm_r("#{Dir.home}/snap/firefox/common/.cache/mozilla/firefox", verbose: true)
+end
+
 puts "Starting firefox to create default settings"
 pid = Process.spawn("firefox --headless", out: "/dev/null", err: "/dev/null")
 puts pid
