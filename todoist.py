@@ -6,6 +6,7 @@ import logging
 import os
 import sys
 import requests
+from time import sleep
 
 
 def read_key(path):
@@ -40,15 +41,21 @@ def add_task(task, project_id=None):
    if project_id is not None:
       request_body["project_id"] = project_id
 
-   res = requests.post("https://api.todoist.com/rest/v2/tasks",
-      json=request_body,
-      headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
+   counter = 3
+   while counter > 0:
+      res = requests.post("https://api.todoist.com/rest/v2/tasks",
+         json=request_body,
+         headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
 
-   if res.status_code == 200:
-      logging.info(f"Adding task: {task} -> Success. Status code 200.")
-   else:
-      logging.error(res.status_code)
-      logging.error(res.content)
+      if res.status_code == 200:
+         logging.info(f"Adding task: {task} -> Success. Status code 200.")
+         break
+      else:
+         logging.error(f"Task {task} failed: {res.status_code}")
+         logging.error(res.content)
+         counter -= 1
+         logging.error(f"Retrying... attempts left is {counter}")
+         sleep(10)
 
 
 def get_projects():
