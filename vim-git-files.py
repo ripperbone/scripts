@@ -3,9 +3,15 @@
 import os
 import subprocess
 import argparse
-
+import sys
+from pathlib import PureWindowsPath
 
 def main():
+
+   if sys.platform == 'win32':
+      path_to_vim = PureWindowsPath('c:/Program Files/Git/usr/bin/vim')
+   else:
+      path_to_vim = 'vim'
 
    parser = argparse.ArgumentParser(description="open git staged files in vim")
    parser.add_argument("-e", dest="exts_to_exclude", action="append", help="specify file extensions to ignore")
@@ -24,7 +30,7 @@ def main():
 
    if len(files_to_edit) > 0:
       print(files_to_edit)
-      os.system("vim -p %s" % (' '.join(files_to_edit)))
+      os.system("\"%s\" -p %s" % (path_to_vim, ' '.join(files_to_edit)))
 
 
 if __name__ == "__main__":
