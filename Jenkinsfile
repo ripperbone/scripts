@@ -1,7 +1,16 @@
 pipeline {
    agent any
 
+   options {
+      skipDefaultCheckout(true)
+   }
    stages {
+      stage('checkout') {
+         steps {
+            cleanWs()
+            checkout scm
+         }
+      }
       stage('shellcheck') {
          steps {
             sh """
@@ -16,7 +25,7 @@ pipeline {
                gem env
                mkdir -p \${WORKSPACE}/.temp/gems
                gem install --no-document --install-dir \${WORKSPACE}/.temp/gems rubocop:1.75.1
-               GEM_PATH=\${WORKSPACE}/.temp/gems \${WORKSPACE}/.temp/gems/bin/rubocop --format html -o reports/rubocop/rubocop.html
+               GEM_PATH=\${WORKSPACE}/.temp/gems \${WORKSPACE}/.temp/gems/bin/rubocop --format simple --format html -o reports/rubocop/rubocop.html
             """
          }
       }
@@ -25,7 +34,7 @@ pipeline {
             sh """
                mkdir -p reports
                pip3 install --upgrade --target=\${WORKSPACE}/.temp/pip -r requirements.txt
-               PYTHONPATH=\${WORKSPACE}/.temp/pip \${WORKSPACE}/.temp/pip/bin/flake8 --exclude=.temp/ --format=html --htmldir reports/flake8
+               PYTHONPATH=\${WORKSPACE}/.temp/pip \${WORKSPACE}/.temp/pip/bin/flake8 --exclude=.temp/ --format=default
             """
          }
       }
@@ -33,11 +42,11 @@ pipeline {
    post {
       always {
          publishHTML(target: [
-            allowMissing: false,
+            allowMissing: true,
             alwaysLinkToLastBuild: true,
             keepAll: false,
             reportDir: 'reports',
-            reportFiles: 'rubocop/rubocop.html,flake8/index.html',
+            reportFiles: 'rubocop/rubocop.html',
             reportName: 'Reports'])
       }
    }

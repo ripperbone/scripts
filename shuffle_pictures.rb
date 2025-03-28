@@ -16,7 +16,7 @@ OptionParser.new do |opts|
    end
    # use -a no or -a false to set to false
    opts.on("-a", "--all [FLAG]", TrueClass, "start a slide show for each selection") do |v|
-      options[:all] = v.nil? ? true : v
+      options[:all] = v.nil? || v
    end
    opts.on("--after DATE", String, "include directories with modified date after specified date") do |v|
       options[:after] = Time.strptime(v, "%Y-%m-%d")
@@ -106,7 +106,7 @@ until selections.empty?
          exit(0)
       end
 
-      pids_list = `ps -u #{ENV['USER']} -o pid=`.split("\n").map { |pid| pid.strip.to_i }
+      pids_list = `ps -u #{ENV.fetch('USER')} -o pid=`.split("\n").map { |pid| pid.strip.to_i }
 
       if pids_list.include?(child_pid)
          Process.kill('TERM', child_pid)

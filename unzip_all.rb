@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'fileutils'
 
@@ -15,9 +16,9 @@ Dir.glob("*.zip") do |zip|
    FileUtils.mkdir(output_dir, verbose: true)
    #system("unzip -d #{output_dir} -j #{zip}")
    system("unzip -d \"#{output_dir}\" \"#{zip}\"")
-   if ! $?.exitstatus.eql?(0)
+   if !$?.exitstatus.eql?(0)
       puts "unzip unsuccessful: #{$?.exitstatus}"
-      FileUtils.rmdir(output_dir, verbose: true) unless Dir.entries(output_dir).size > 2
+      FileUtils.rmdir(output_dir, verbose: true) if Dir.empty?(output_dir)
       exit(1)
    end
    #Dir.glob("#{output_dir}/*") do |file|

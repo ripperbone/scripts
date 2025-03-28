@@ -21,6 +21,7 @@ def get_login_info():
       raise Exception(f"size of credentials expected to be: 2 was: {len(credentials)}")
    return {"username": credentials[0], "password": credentials[1]}
 
+
 def get_modem_log(login_username, login_password):
    chrome_options = Options()
    chrome_options.add_argument("--incognito")

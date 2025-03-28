@@ -6,6 +6,7 @@ import argparse
 import sys
 from pathlib import PureWindowsPath
 
+
 def main():
 
    if sys.platform == 'win32':
