@@ -15,7 +15,7 @@ pipeline {
                mkdir -p reports
                gem env
                mkdir -p \${WORKSPACE}/.temp/gems
-               gem install --no-document --install-dir \${WORKSPACE}/.temp/gems rubocop -v 1.6.1
+               gem install --no-document --install-dir \${WORKSPACE}/.temp/gems rubocop:1.75.1
                GEM_PATH=\${WORKSPACE}/.temp/gems \${WORKSPACE}/.temp/gems/bin/rubocop --format html -o reports/rubocop/rubocop.html
             """
          }
