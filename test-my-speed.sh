@@ -4,7 +4,9 @@
 # but I just want to dump all the output to a consistent place.
 #
 # I would suggest getting speedtest-cli the following way:
-# pip3 install --user speedtest-cli
+# python3 -m venv ~/.local/mypyenv
+# source ~/.local/mypyenv/bin/activate
+# pip3 install speedtest-cli
 #
 # Set the below OUTPUT_FILE variable to the path where you wish to store the results.
 
@@ -14,6 +16,9 @@ if [ ! -d "$(dirname "${OUTPUT_FILE}")" ]; then
    echo "The directory $(dirname "${OUTPUT_FILE}") does not exist. If you really want to output results there, please create it."
    exit 1
 fi
+
+
+source "${HOME}/.local/mypyenv/bin/activate"
 
 
 if [ ! "$(command -v speedtest-cli)" ]; then
