@@ -1,4 +1,4 @@
 [flake8]
 indent-size = 3
 max-line-length = 150
-ignore = E128
+ignore = E128, E261, E265, E302, E303, E305

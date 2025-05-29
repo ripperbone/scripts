@@ -27,7 +27,7 @@ def check_patch_notes(url, verbose=False):
    #Do set() to remove duplicates since the dates appear in the HTML twice
    #Sort the dates to make sure we're comparing the most recent date we found in the HTML with today's date
 
-   matches = sorted(set(list(map(str_to_date, re.findall('[A-z]+ \d{1,2}, \d{4}', res.text)))))
+   matches = sorted(set(list(map(str_to_date, re.findall(r"[A-z]+ \d{1,2}, \d{4}", res.text)))))
 
    if len(matches) == 0:
       print("No dates found to compare. This doesn't seem right.")

@@ -39,7 +39,7 @@ def main():
    state_group.add_argument("--off", action="store_true", help="turn off")
    switch_subparser.add_argument("--name", type=str, help="friendly name of the device", required=True)
 
-   list_subparser = subparsers.add_parser("list", help="list devices")
+   _ = subparsers.add_parser("list", help="list devices")
    args = parser.parse_args()
 
 
@@ -49,13 +49,14 @@ def main():
 
    #print(config)
 
-   res = requests.get("http://%s/api/states" % config["baseurl"], headers = {"Authorization": "Bearer %s" % token})
+   res = requests.get("http://%s/api/states" % config["baseurl"], headers={"Authorization": "Bearer %s" % token})
 
    if res.status_code != 200:
       print(f"status code is: {res.status_code}")
       sys.exit(1)
 
-   entities = [{"friendly_name": entity["attributes"]["friendly_name"].rstrip(), "entity_id": entity["entity_id"], "state": entity["state"]} for entity in res.json()]
+   entities = [{"friendly_name": entity["attributes"]["friendly_name"].rstrip(), "entity_id": entity["entity_id"], "state": entity["state"]}
+      for entity in res.json()]
    light_devices = [entity for entity in entities if re.search(r'^(lamp|light|switch)', entity["entity_id"], re.IGNORECASE)]
 
 
@@ -85,8 +86,8 @@ def main():
 
 
    res = requests.post("http://%s/api/services/%s/%s" % (config["baseurl"], domain, service),
-   data = json.dumps(data),
-   headers = {"Authorization": "Bearer %s" % token})
+      data=json.dumps(data),
+      headers={"Authorization": "Bearer %s" % token})
 
 
    if res.status_code != 200:
