@@ -45,7 +45,10 @@ def main():
 
    token = read_key(os.path.join(os.path.expanduser("~"), ".keys", "homeassistant"))
 
-   config = read_yaml(os.path.join(os.path.expanduser("~"), ".config", os.path.basename(__file__).replace(".", "-"), "config.yaml"))
+   if sys.platform == 'win32':
+      config = read_yaml(os.path.join(os.path.expanduser("~"), "AppData", "Local", os.path.basename(__file__).replace(".", "-"), "config.yaml"))
+   else:
+      config = read_yaml(os.path.join(os.path.expanduser("~"), ".config", os.path.basename(__file__).replace(".", "-"), "config.yaml"))
 
    #print(config)
 
