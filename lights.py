@@ -59,7 +59,7 @@ def main():
       sys.exit(1)
 
    entities = [{"friendly_name": entity["attributes"]["friendly_name"].rstrip(), "entity_id": entity["entity_id"], "state": entity["state"]}
-      for entity in res.json()]
+      for entity in res.json() if "friendly_name" in entity["attributes"]]
    light_devices = [entity for entity in entities if re.search(r'^(lamp|light|switch)', entity["entity_id"], re.IGNORECASE)]
 
 
