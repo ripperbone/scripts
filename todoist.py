@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import logging
 import os
 import sys
@@ -42,7 +43,7 @@ def add_task(task, project_id=None):
 
    counter = 3
    while counter > 0:
-      res = requests.post("https://api.todoist.com/rest/v2/tasks",
+      res = requests.post("https://api.todoist.com/api/v1/tasks",
          json=request_body,
          headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
 
@@ -60,7 +61,7 @@ def add_task(task, project_id=None):
 def get_projects():
    logging.info("Listing projects...")
 
-   res = requests.get("https://api.todoist.com/rest/v2/projects",
+   res = requests.get("https://api.todoist.com/api/v1/projects",
       headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
 
    if res.status_code == 200:
@@ -73,7 +74,7 @@ def get_projects():
 def get_tasks(project_id):
    logging.info("Listing tasks...")
 
-   res = requests.get(f"https://api.todoist.com/rest/v2/tasks?project_id={project_id}",
+   res = requests.get(f"https://api.todoist.com/api/v1/tasks?project_id={project_id}&limit=100",
       headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
 
    if res.status_code == 200:
@@ -86,27 +87,15 @@ def get_tasks(project_id):
 def close_task(task_id):
    logging.info(f"Closing task {task_id}...")
 
-   res = requests.post(f"https://api.todoist.com/rest/v2/tasks/{task_id}/close",
+   res = requests.post(f"https://api.todoist.com/api/v1/tasks/{task_id}/close",
       headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
 
-   if res.status_code == 204:
+   if res.status_code in [200, 204]:
       logging.info(f"Task {task_id} closed")
    else:
       logging.error(res.status_code)
       logging.error(res.content)
 
-
-def delete_task(task_id):
-   logging.info(f"Deleting task {task_id}...")
-
-   res = requests.delete(f"https://api.todoist.com/rest/v2/tasks/{task_id}",
-      headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
-
-   if res.status_code == 204:
-      logging.info(f"Task {task_id} deleted")
-   else:
-      logging.error(res.status_code)
-      logging.error(res.content)
 
 
 def main():
@@ -121,8 +110,6 @@ def main():
    list_parser.add_argument("--project_id", type=str, help="the id of the project to list tasks")
    close_parser = subparsers.add_parser("close")
    close_parser.add_argument("task_id", type=str, help="the id of the task to close")
-   delete_parser = subparsers.add_parser("delete")
-   delete_parser.add_argument("task_id", type=str, help="the id of the task to delete")
 
    args = parser.parse_args()
 
@@ -134,21 +121,29 @@ def main():
    if args.sub_command == "add":
       add_task(args.task, args.project_id)
    elif args.sub_command == "projects":
-      for project in get_projects():
+      projects = get_projects()
+      for project in projects["results"]:
          print("%s\t%s" % (str(project['id']), project['name']))
    elif args.sub_command == "list":
       if args.project_id is None:
-         for project in filter(lambda p: p["is_inbox_project"] is True, get_projects()):
-            for task in get_tasks(project['id']):
+         for project in filter(lambda p: p["inbox_project"] is True, get_projects()["results"]):
+            tasks = get_tasks(project['id'])
+            print(json.dumps(tasks, indent=4))
+            for task in tasks["results"]:
                print("%s\t%s" % (str(task['id']), task['content']))
+
+            if tasks["next_cursor"] is not None:
+               print("> %d tasks" % len(tasks["results"]))
       else:
-         for task in get_tasks(args.project_id):
+         tasks = get_tasks(args.project_id)
+         for task in tasks["results"]:
             print("%s\t%s" % (str(task['id']), task['content']))
+
+         if tasks["next_cursor"] is not None:
+            print("> %d tasks" % len(tasks["results"]))
 
    elif args.sub_command == "close":
       close_task(args.task_id)
-   elif args.sub_command == "delete":
-      delete_task(args.task_id)
    else:
       parser.print_help()
 
