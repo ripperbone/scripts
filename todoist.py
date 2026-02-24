@@ -3,6 +3,7 @@
 import argparse
 import json
 import logging
+from logging.handlers import SysLogHandler
 import os
 import sys
 import requests
@@ -24,7 +25,7 @@ def read_key(path):
 rootLogger = logging.getLogger()
 rootLogger.setLevel(logging.INFO)
 logFormatter = logging.Formatter("[ %(asctime)s ] %(levelname)s %(message)s")
-
+syslogFormatter = logging.Formatter("%(filename)s:%(lineno)d %(levelname)s %(message)s")
 # set up sysout logging
 streamHandler = logging.StreamHandler(sys.stdout)
 rootLogger.addHandler(streamHandler)
@@ -101,6 +102,7 @@ def close_task(task_id):
 def main():
    parser = argparse.ArgumentParser(description="script for adding Todoist tasks")
    parser.add_argument("--log", type=str, help="log output to file")
+   parser.add_argument("--syslog", action="store_true", help="log output to syslog")
    subparsers = parser.add_subparsers(dest='sub_command')
    add_parser = subparsers.add_parser("add")
    add_parser.add_argument("tasks", nargs='+', type=str, help="the description of the task")
@@ -117,6 +119,11 @@ def main():
       fileHandler = logging.FileHandler(args.log)
       fileHandler.setFormatter(logFormatter)
       rootLogger.addHandler(fileHandler)
+
+   if args.syslog is True:
+      syslogHandler = SysLogHandler(facility=SysLogHandler.LOG_DAEMON, address="/dev/log")
+      syslogHandler.setFormatter(syslogFormatter)
+      rootLogger.addHandler(syslogHandler)
 
    if args.sub_command == "add":
       for task in args.tasks:
