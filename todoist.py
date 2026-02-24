@@ -103,7 +103,7 @@ def main():
    parser.add_argument("--log", type=str, help="log output to file")
    subparsers = parser.add_subparsers(dest='sub_command')
    add_parser = subparsers.add_parser("add")
-   add_parser.add_argument("task", type=str, help="the description of the task")
+   add_parser.add_argument("tasks", nargs='+', type=str, help="the description of the task")
    add_parser.add_argument("--project_id", type=str, help="the id of the project for the task")
    subparsers.add_parser("projects")
    list_parser = subparsers.add_parser("list")
@@ -119,7 +119,8 @@ def main():
       rootLogger.addHandler(fileHandler)
 
    if args.sub_command == "add":
-      add_task(args.task, args.project_id)
+      for task in args.tasks:
+         add_task(task, args.project_id)
    elif args.sub_command == "projects":
       projects = get_projects()
       for project in projects["results"]:
