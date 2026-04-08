@@ -43,16 +43,16 @@ def main():
    args = parser.parse_args()
 
 
-   token = read_key(os.path.join(os.path.expanduser("~"), ".keys", "homeassistant"))
+   config = read_yaml(os.path.join(os.path.expanduser("~"), ".keys", "homeassistant.yml"))
 
-   if sys.platform == 'win32':
-      config = read_yaml(os.path.join(os.path.expanduser("~"), "AppData", "Local", "lights_control.yaml"))
-   else:
-      config = read_yaml(os.path.join(os.path.expanduser("~"), ".config", "lights_control.yaml"))
+   required_properties = ["baseurl", "token"]
+   for prop in required_properties:
+      if prop not in config:
+         print(f"missing property: {prop}")
+         sys.exit(1)
 
-   #print(config)
 
-   res = requests.get("http://%s/api/states" % config["baseurl"], headers={"Authorization": "Bearer %s" % token})
+   res = requests.get("http://%s/api/states" % config["baseurl"], headers={"Authorization": "Bearer %s" % config["token"]})
 
    if res.status_code != 200:
       print(f"status code is: {res.status_code}")
@@ -90,7 +90,7 @@ def main():
 
    res = requests.post("http://%s/api/services/%s/%s" % (config["baseurl"], domain, service),
       data=json.dumps(data),
-      headers={"Authorization": "Bearer %s" % token})
+      headers={"Authorization": "Bearer %s" % config["token"]})
 
 
    if res.status_code != 200:
